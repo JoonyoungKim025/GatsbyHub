@@ -177,7 +177,17 @@ export default class GatsbyCli {
 
   static installPlugin() {
     const activeTerminal = Utilities.getActiveTerminal();
+
+    // runs npm install gatsby-transformer-json in CLI
+    activeTerminal.sendText(`npm install ${pluginName}`); // specify pluginName
     activeTerminal.show();
     console.log('Plugin Installed!');
+
+    /**  tell the user to add plugin name to the module.exports.plugins array in gatsby.config.js
+     * NOTE: This is because currently there is no command that writes code in CLI.
+     * "echo" cannot specify where in file
+     */
+    window.showInformationMessage('Add the plugin name to plugin array in gatsby.config.js.');
+    
   }
 }
