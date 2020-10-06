@@ -6,7 +6,9 @@ export default class PluginData {
   // returns an object with plugin packages
   // retrieves plugin packages from npm api
   public static async getPlugins() {
-    // const keywords = ['gatsby-source-filesystem', 'gatsby-image', 'gatsby-remark', 'gatsby-node', 'gatsby-background', 'gatsby-wordpress', 'gatsby-cli', 'gatsby-plugin', 'gatsby-alias', 'gatsby-source', 'gatsby-transformer'];
+    // const keywords = ['gatsby-source-filesystem', 'gatsby-image', 'gatsby-remark', 'gatsby-node',
+    // 'gatsby-background', 'gatsby-wordpress', 'gatsby-cli',
+    // 'gatsby-plugin', 'gatsby-alias', 'gatsby-source', 'gatsby-transformer'];
 
     const keywords = ['gatsby', 'gatsby-plugin', 'gatsby-source', 'gatsby-transformer'];
     // creates an array of npm objects based on keywords array
