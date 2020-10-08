@@ -37,7 +37,7 @@ export default class GatsbyCli {
     if (inputPassword !== undefined) activeTerminal.sendText(inputPassword);
     // TODO: if the password is wrong, show inputbox again
     // else, show terminal
-    activeTerminal.show();
+    activeTerminal.show(true);
   }
 
   /**  Creates a new site when 'Create New Site' button is clicked.
@@ -52,11 +52,30 @@ export default class GatsbyCli {
     // Defines string for button in information message
     const openFolderMsg: string = 'Open Folder';
 
-    // Tells user that new site will be created in current directory
+    // Only run this command when the workspace is empty
+    // returns true if current workspace is empty
+    // const isEmpty = await Utilities.checkIfWorkspaceEmpty();
+
+    // if (!isEmpty) {
+    //   window.showWarningMessage('Must create site in an empty workspace.');
+    //   return;
+    // }
+
+    if (!starterObj) {
+      const input = await window.showInformationMessage(
+        'This creates the default starter. If you would like a different starter, refer to the "Starters" menu.',
+        'Use default',
+        'Choose a different starter'
+      );
+
+      if (input === 'Choose a different starter') return;
+    }
+
+    // tell user that new site will be created in current directory
     const choice = await window.showInformationMessage(
-      `New Gatsby site will be created in current directory 
+      `New Gatsby site will be created in current directory
         unless you open a different folder for your project`,
-      openFolderMsg,
+      openFolderMsg
     );
 
     // ????
@@ -64,50 +83,73 @@ export default class GatsbyCli {
       commands.executeCommand('vscode.openFolder');
     }
 
-    // Gives user a place to write the name of their site
+    // const workspacePath = Uri.file(
+    //   path.resolve(__dirname, `../../${siteName}`)
+    // );
+    // console.log('workspacePath: ', workspacePath);
+    // you can specify where the new window will open to (our new gatsby site)
+    // commands.executeCommand('vscode.openFolder', workspacePath, true);
+
+    // give user the option to create site in new folder instead
+    // give user a place to write the name of their site
     const siteName = await window.showInputBox({
-      placeHolder: 'Enter-new-site-filename',
+      placeHolder: 'Enter Name of New Site',
     });
 
-    // Sends command to the terminal
+    // send command to the terminal
     if (siteName) {
       // starterObj is ???
       if (starterObj) {
-        console.log('starterObj', starterObj);
         const { repository } = starterObj.command.arguments[0].links;
-        activeTerminal.sendText(`gatsby new ${siteName} ${repository} && cd ${siteName}`);
+        activeTerminal.sendText(
+          `gatsby new ${siteName} ${repository} && cd ${siteName}`
+        );
+        activeTerminal.sendText('code .');
+        activeTerminal.show(true);
       } else {
         activeTerminal.sendText(`gatsby new ${siteName} && cd ${siteName}`);
+        activeTerminal.sendText('code .');
+        activeTerminal.show(true);
       }
       activeTerminal.show();
     } else {
       window.showWarningMessage(
-        'Must enter a name for your new Gatsby directory',
+        'Must enter a name for your new Gatsby directory'
       );
     }
   }
 
   // Starts development server and opens project in a new browser
   public async developServer() {
+    const gatsbyIsInitiated: boolean = await Utilities.checkIfGatsbySiteInitiated();
+
     if (!workspace.workspaceFolders) {
       return this.showPopUpMsg(
         'Open a folder or workspace... (File -> Open Folder)',
-        true,
+        true
       );
     }
 
     if (!workspace.workspaceFolders.length) {
       return this.showPopUpMsg(
         "You don't have any Gatsby folders in this workspace",
-        true,
+        true
       );
+    }
+
+    if (!gatsbyIsInitiated) {
+      this.showPopUpMsg(
+        "You don't have any Gatsby folders in this workspace",
+        false,
+        false
+      );
+      return null;
     }
 
     // Finds path to file in text editor and drops the file name from the path
     const rootPath = getRootPath();
 
     const activeTerminal = Utilities.getActiveTerminal();
-    activeTerminal.show();
 
     // Only cd into rootpath if it exists, otherwise just run command on current workspace
     if (rootPath) {
@@ -122,6 +164,7 @@ export default class GatsbyCli {
     // Toggles statusBar after 4 seconds so it will dispose server if clicked again
     setTimeout(this.toggleStatusBar, 4000);
     window.showInformationMessage('Gatsby Server Running on port:8000');
+    activeTerminal.show(true);
     /** write options to set host, set port, to open site, and to use https
      * gatsby develop only works in the site directory
      * allow user to open folder for their site directory */
@@ -146,7 +189,7 @@ export default class GatsbyCli {
     const rootPath = getRootPath();
 
     const activeTerminal = Utilities.getActiveTerminal();
-    activeTerminal.show();
+    activeTerminal.show(true);
 
     // Directs to rootpath only if it exists. If not, just run command on current workspace
     if (rootPath) {
@@ -174,11 +217,15 @@ export default class GatsbyCli {
   private showPopUpMsg(
     msg: string,
     isErrorMsg: boolean = false,
-    // isWarning: boolean = false,
+    isWarning: boolean = false
   ) {
-    if (isErrorMsg) window.showErrorMessage(msg);
-    // else if (isWarning) window.showWarningMessage(msg);
-    else window.showInformationMessage(msg);
+    if (isErrorMsg) {
+      window.showErrorMessage(msg);
+    } else if (isWarning) {
+      window.showWarningMessage(msg);
+    } else {
+      window.showInformationMessage(msg);
+    }
   }
 
   // Installs plugin when user clicks on download & install button
@@ -188,7 +235,8 @@ export default class GatsbyCli {
       const { homepage, repository } = plugin.command.arguments[0].links;
       const installCmnd = await PluginData.getNpmInstall(repository, homepage);
       activeTerminal.sendText(installCmnd);
-      activeTerminal.show();
+      activeTerminal.show(true);
+      window.showInformationMessage('Refer to this plugin\'s documentation regarding further configuration. Simply click on the plugin in the "Plugins" section.', 'OK')
     }
   }
 }
