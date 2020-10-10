@@ -1,8 +1,7 @@
 import { window, commands, workspace } from 'vscode';
 import StatusBar from '../utils/statusBarItem';
 import Utilities from '../utils/Utilities';
-import { getRootPath } from '../utils/workspaceResolver';
-import PluginData from '../models/NpmData';
+import PluginData from './NpmData';
 
 // Defines the functionality of the Gatsby CLI Commands
 export default class GatsbyCli {
@@ -22,9 +21,10 @@ export default class GatsbyCli {
     this.showPopUpMsg = this.showPopUpMsg.bind(this);
   }
 
-  // Installs gatsby-cli for the user when install gatsby button is clicked
-  static async installGatsby() {
-    // TODO: If a gatsby terminal isn't open, create new terminal. Otherwise, use gatsbyhub terminal
+  // installs gatsby-cli for the user when install gatsby button is clicked
+  // static keyword: eliminates the need to instantiate to use this method in extenstion.ts
+  async installGatsby() {
+    // if a gatsby terminal isn't open, create a new terminal. Otherwise, use gatsbyhub terminal
     const activeTerminal = Utilities.getActiveTerminal();
     activeTerminal.sendText('sudo npm install -g gatsby-cli');
 
@@ -45,8 +45,8 @@ export default class GatsbyCli {
    * NOTE: new site will be created wherever the root directory is currently located
    * The user terminal should be at the directory user wishes to download the files.
    */
-  static async createSite(starterObj?: any) {
-    // TODO: Get GatsbyHub terminal or create a new terminal if it doesn't exist
+  async createSite(starterObj?: any) {
+    // get GatsbyHub terminal or create a new terminal if it doesn't exist
     const activeTerminal = Utilities.getActiveTerminal();
 
     // Defines string for button in information message
@@ -124,30 +124,28 @@ export default class GatsbyCli {
     const gatsbyIsInitiated: boolean = await Utilities.checkIfGatsbySiteInitiated();
 
     if (!workspace.workspaceFolders) {
-      return this.showPopUpMsg(
-        'Open a folder or workspace... (File -> Open Folder)',
-        true
-      );
-    }
-
-    if (!workspace.workspaceFolders.length) {
-      return this.showPopUpMsg(
-        "You don't have any Gatsby folders in this workspace",
-        true
-      );
-    }
-
-    if (!gatsbyIsInitiated) {
-      this.showPopUpMsg(
-        "You don't have any Gatsby folders in this workspace",
-        false,
-        false
+      window.showInformationMessage(
+        'Open a folder or workspace... (File -> Open Folder)'
       );
       return null;
     }
 
-    // Finds path to file in text editor and drops the file name from the path
-    const rootPath = getRootPath();
+    if (!workspace.workspaceFolders.length) {
+      window.showErrorMessage(
+        "You don't have any Gatsby folders in this workspace"
+      );
+      return null;
+    }
+
+    if (!gatsbyIsInitiated) {
+      window.showInformationMessage(
+        "You don't have any Gatsby folders in this workspace"
+      );
+      return null;
+    }
+
+    // finds path to file in text editor and drops the file name from the path
+    const rootPath = Utilities.getRootPath();
 
     const activeTerminal = Utilities.getActiveTerminal();
 
@@ -168,6 +166,7 @@ export default class GatsbyCli {
     /** write options to set host, set port, to open site, and to use https
      * gatsby develop only works in the site directory
      * allow user to open folder for their site directory */
+    return null;
   }
 
   // Disposes development server by disposing the terminal
@@ -183,10 +182,10 @@ export default class GatsbyCli {
     window.showInformationMessage('Disposing Gatsby Server on port:8000');
   }
 
-  // Builds and packages Gatsby site
-  static async build() {
-    // Finds path to file in text editor and drops the file name from the path
-    const rootPath = getRootPath();
+  // builds and packages Gatsby site
+  async build() {
+    // finds path to file in text editor and drops the file name from the path
+    const rootPath = Utilities.getRootPath();
 
     const activeTerminal = Utilities.getActiveTerminal();
     activeTerminal.show(true);
@@ -228,15 +227,16 @@ export default class GatsbyCli {
     }
   }
 
-  // Installs plugin when user clicks on download & install button
-  static async installPlugin(plugin?: any) {
+  async installPlugin(plugin?: any) {
     const activeTerminal = Utilities.getActiveTerminal();
+    const rootPath = Utilities.getRootPath();
     if (plugin) {
       const { homepage, repository } = plugin.command.arguments[0].links;
       const installCmnd = await PluginData.getNpmInstall(repository, homepage);
+      if (rootPath) activeTerminal.sendText(`cd && cd ${rootPath}`);
       activeTerminal.sendText(installCmnd);
       activeTerminal.show(true);
-      window.showInformationMessage('Refer to this plugin\'s documentation regarding further configuration. Simply click on the plugin in the "Plugins" section.', 'OK')
+      window.showInformationMessage('Refer to this plugin\'s documentation regarding further configuration. Simply click on the plugin in the "Plugins" section.', 'OK');
     }
   }
 }
