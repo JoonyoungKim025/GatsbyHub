@@ -58,7 +58,6 @@ export default class WebViews {
     ${readMe}
     `;
 
-    // close the webview when not looking at it
     panel.onDidChangeViewState((e) => {
       if (!e.webviewPanel.active) {
         panel.dispose();

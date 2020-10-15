@@ -33,8 +33,7 @@
       },
       {
         "command": "gatsbyhub.disposeServer",
-        "title": "Dispose Server",
-        "icon": "$(circle-slash)"
+        "title": "Dispose Server"
       },
       {
         "command": "gatsbyhub.installPlugin",
@@ -48,11 +47,6 @@
       {
         "command": "gatsbyhub.createWebView",
         "title": "Show Plugin WebView"
-      },
-      {
-        "command": "gatsbyhub.openGraphiQL",
-        "title": "Open GraphiQL",
-        "icon": "$(browser)"
       }
     ],
     "viewsContainers": {
@@ -107,17 +101,7 @@
         {
           "command": "gatsbyhub.developServer",
           "group": "navigation",
-          "when": "view == commands && serverIsRunning == false"
-        },
-        {
-          "command": "gatsbyhub.disposeServer",
-          "group": "navigation",
-          "when": "view == commands && serverIsRunning == true"
-        },
-        {
-          "command": "gatsbyhub.openGraphiQL",
-          "group": "navigation",
-          "when": "view == commands && serverIsRunning == true"
+          "when": "view == commands"
         }
       ],
       "view/item/context": [
