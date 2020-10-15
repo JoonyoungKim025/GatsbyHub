@@ -12,6 +12,7 @@ export default class PluginProvider implements vscode.TreeDataProvider<Plugin> {
 
   async createPlugins() {
     const npmData = new NpmData();
+    // returns an array whose elements are objects of npm packages(plugins)
     return (await npmData.getNpmPackages('plugin')).map(
       (obj: any) =>
         new Plugin(obj.name, {

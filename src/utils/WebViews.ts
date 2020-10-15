@@ -1,5 +1,6 @@
-import * as vscode from 'vscode';
+import { window, ViewColumn } from 'vscode';
 import PluginData from '../models/NpmData';
+import GatsbyCli from '../models/GatsbyCli';
 
 export default class WebViews {
   static async openWebView({ links, name, version, description }: any) {
@@ -12,10 +13,10 @@ export default class WebViews {
       .replace(/^\w?|\s\w?/g, (match: string) => match.toUpperCase());
 
     // createWebviewPanel takes in the type of the webview panel & Title of the panel & showOptions
-    const panel = vscode.window.createWebviewPanel(
+    const panel = window.createWebviewPanel(
       'plugin',
       `Gatsby Plugin: ${title}`,
-      vscode.ViewColumn.One
+      ViewColumn.One
     );
 
     // create a header for each npm package and display README underneath header
@@ -49,7 +50,7 @@ export default class WebViews {
     <div class="plugin-header">
       <div id="title-btn">
         <h1 id="title">${title}</h1>
-        <button id="install-btn">Install</button>
+        <button id="install-btn" onclick="installPlugin">Install</button>
       </div>
       <p>Version: ${version}</p>
       <p>${description}</p>
