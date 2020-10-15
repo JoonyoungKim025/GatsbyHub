@@ -1,9 +1,10 @@
 import { window, ViewColumn } from 'vscode';
 import PluginData from '../models/NpmData';
+import Utilities from './Utilities';
 
 export default class WebViews {
-  static async openWebView({ links, name, version, description }: any) {
-    // const { links, name, version, description } = npmPackage;
+  static async openWebView(npmPackage: any) {
+    const { links, name, version, description } = npmPackage;
     const readMe = await PluginData.mdToHtml(links.repository, links.homepage);
 
     // turn npm package name from snake-case to standard capitalized title
@@ -20,6 +21,42 @@ export default class WebViews {
 
     // create a header for each npm package and display README underneath header
     // currently #install-btn does not work
+    // const gatsbycli = new GatsbyCli();
+
+    async function installPlugin(npmName: string, npmLinks: any): Promise<void> {
+      const activeTerminal = Utilities.getActiveTerminal();
+      const rootPath = Utilities.getRootPath();
+      // gets to npmPackage
+      // const { name, links } = npmPackage
+      // plugin.command.arguments[0];
+      if (npmLinks) {
+        const installCmnd =
+          (await PluginData.getNpmInstall(npmLinks.repository, npmLinks.homepage)) ||
+          `npm install ${npmName}`;
+  
+        if (rootPath) {
+          activeTerminal.sendText(`cd && cd ${rootPath}`);
+          activeTerminal.sendText(installCmnd);
+          activeTerminal.show(true);
+        } else {
+          activeTerminal.sendText(installCmnd);
+          activeTerminal.show(true);
+        }
+        // check for if "plugin" is a theme or actual plugin
+        if (npmName.startsWith('gatsby-theme')) {
+          window.showInformationMessage(
+            'Refer to this theme\'s documentation regarding implementation. Simply click on the theme in the "Themes" section.',
+            'OK'
+          );
+        } else {
+          window.showInformationMessage(
+            'Refer to this plugin\'s documentation regarding further configuration. Simply click on the plugin in the "Plugins" section.',
+            'OK'
+          );
+        }
+      }
+    }
+
     panel.webview.html = `
     <style>
       .plugin-header {
@@ -49,10 +86,11 @@ export default class WebViews {
     <div class="plugin-header">
       <div id="title-btn">
         <h1 id="title">${title}</h1>
-        <button id="install-btn">Install</button>
+        <button id="install-btn" onclick=${installPlugin(name, links)}>Install</button>
       </div>
       <p>Version: ${version}</p>
       <p>${description}</p>
+      
       <hr class="solid">
     </div>
     ${readMe}
@@ -65,6 +103,7 @@ export default class WebViews {
       }
     });
   }
+  
   // potentially add in install functionality in webview
   // static installPlugin() {
   //   document.getElementById('install-btn').innerHTML = 'Installing...';

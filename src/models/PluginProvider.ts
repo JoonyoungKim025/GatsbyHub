@@ -17,6 +17,7 @@ export default class PluginProvider implements TreeDataProvider<Plugin> {
         new Plugin(obj.name, {
           command: 'gatsbyhub.createWebView',
           title: 'Show Plugin WebView',
+          // obj is the entire npmPackage
           arguments: [obj],
         })
     );
