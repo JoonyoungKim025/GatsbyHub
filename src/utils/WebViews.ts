@@ -22,6 +22,7 @@ export default class WebViews {
     // create a header for each npm package and display README underneath header
     // currently #install-btn does not work
     // const gatsbycli = new GatsbyCli();
+    let installCmnd;
 
     async function installPlugin(npmName: string, npmLinks: any): Promise<void> {
       const activeTerminal = Utilities.getActiveTerminal();
@@ -29,8 +30,10 @@ export default class WebViews {
       // gets to npmPackage
       // const { name, links } = npmPackage
       // plugin.command.arguments[0];
+
       if (npmLinks) {
-        const installCmnd =
+        console.log('npmlinks!');
+        installCmnd =
           (await PluginData.getNpmInstall(npmLinks.repository, npmLinks.homepage)) ||
           `npm install ${npmName}`;
   
@@ -58,7 +61,6 @@ export default class WebViews {
     }
 
     const installPlugin2 = () => installPlugin(name, links);
-
     panel.webview.html = `
     <style>
       .plugin-header {
@@ -88,13 +90,17 @@ export default class WebViews {
     <div class="plugin-header">
       <div id="title-btn">
         <h1 id="title">${title}</h1>
-        <button id="install-btn" onclick=${installPlugin2()}>Install</button>
+        <button id="install-btn" onclick="${installPlugin2()}">Install</button>
       </div>
       <p>Version: ${version}</p>
       <p>${description}</p>
       
       <hr class="solid">
     </div>
+    <script>
+      const installPlugin2 = () => ${installCmnd}
+    <script>
+
     ${readMe}
     `;
 
@@ -105,7 +111,7 @@ export default class WebViews {
       }
     });
   }
-  
+
   // potentially add in install functionality in webview
   // static installPlugin() {
   //   document.getElementById('install-btn').innerHTML = 'Installing...';
