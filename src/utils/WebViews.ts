@@ -1,6 +1,7 @@
 import { window, ViewColumn } from 'vscode';
 import PluginData from '../models/NpmData';
 import { PluginPkg } from '../utils/Interfaces';
+import Utilities from './Utilities';
 
 export default class WebViews {
   static async openWebView(npmPackage: PluginPkg) {
@@ -16,7 +17,10 @@ export default class WebViews {
     const panel = window.createWebviewPanel(
       'plugin',
       `Gatsby Plugin: ${title}`,
-      ViewColumn.One
+      ViewColumn.One,
+      {
+        enableScripts: true
+      }
     );
 
     // create a header for each npm package and display README underneath header
@@ -90,7 +94,7 @@ export default class WebViews {
     <div class="plugin-header">
       <div id="title-btn">
         <h1 id="title">${title}</h1>
-        <a id="install-btn">Install</a>
+        <a id="install-btn" onclick="${installPlugin2}">Install</a>
       </div>
       <p>Version: ${version}</p>
       <p>${description}</p>
