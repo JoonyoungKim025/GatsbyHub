@@ -1,9 +1,9 @@
 import { window, ViewColumn } from 'vscode';
 import PluginData from '../models/NpmData';
-import Utilities from './Utilities';
+import { PluginPkg } from '../utils/Interfaces';
 
 export default class WebViews {
-  static async openWebView(npmPackage: any) {
+  static async openWebView(npmPackage: PluginPkg) {
     const { links, name, version, description } = npmPackage;
     const readMe = await PluginData.mdToHtml(links.repository, links.homepage);
 
@@ -90,7 +90,7 @@ export default class WebViews {
     <div class="plugin-header">
       <div id="title-btn">
         <h1 id="title">${title}</h1>
-        <button id="install-btn" onclick="${installPlugin2()}">Install</button>
+        <a id="install-btn">Install</a>
       </div>
       <p>Version: ${version}</p>
       <p>${description}</p>
