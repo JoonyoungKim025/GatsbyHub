@@ -1,4 +1,4 @@
-import { window, ViewColumn } from 'vscode';
+import * as vscode from 'vscode';
 import PluginData from '../models/NpmData';
 import { PluginPkg } from '../utils/Interfaces';
 import Utilities from './Utilities';
@@ -14,10 +14,10 @@ export default class WebViews {
       .replace(/^\w?|\s\w?/g, (match: string) => match.toUpperCase());
 
     // createWebviewPanel takes in the type of the webview panel & Title of the panel & showOptions
-    const panel = window.createWebviewPanel(
+    const panel = vscode.window.createWebviewPanel(
       'plugin',
       `Gatsby Plugin: ${title}`,
-      ViewColumn.One,
+      vscode.ViewColumn.One,
       {
         enableScripts: true
       }
@@ -51,20 +51,19 @@ export default class WebViews {
         }
         // check for if "plugin" is a theme or actual plugin
         if (npmName.startsWith('gatsby-theme')) {
-          window.showInformationMessage(
+          vscode.window.showInformationMessage(
             'Refer to this theme\'s documentation regarding implementation. Simply click on the theme in the "Themes" section.',
             'OK'
           );
         } else {
-          window.showInformationMessage(
+          vscode.window.showInformationMessage(
             'Refer to this plugin\'s documentation regarding further configuration. Simply click on the plugin in the "Plugins" section.',
             'OK'
           );
         }
       }
     }
-
-    const installPlugin2 = () => installPlugin(name, links);
+    panel.webview.postMessage('hi');
     panel.webview.html = `
     <style>
       .plugin-header {
@@ -94,16 +93,13 @@ export default class WebViews {
     <div class="plugin-header">
       <div id="title-btn">
         <h1 id="title">${title}</h1>
-        <a id="install-btn" onclick="${installPlugin2}">Install</a>
+        <button id="install-btn" onclick="${installPlugin(name, links)}">Install</button>
       </div>
       <p>Version: ${version}</p>
       <p>${description}</p>
       
       <hr class="solid">
     </div>
-    <script>
-      const installPlugin2 = () => ${installCmnd}
-    <script>
 
     ${readMe}
     `;
