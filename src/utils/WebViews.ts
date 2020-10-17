@@ -4,67 +4,25 @@ import { PluginPkg } from '../utils/Interfaces';
 import Utilities from './Utilities';
 
 export default class WebViews {
-  static async openWebView(npmPackage: PluginPkg) {
-    const { links, name, version, description } = npmPackage;
-    const readMe = await PluginData.mdToHtml(links.repository, links.homepage);
+	static async openWebView(npmPackage: PluginPkg) {
+		const { links, name, version, description } = npmPackage;
+		const readMe = await PluginData.mdToHtml(links.repository, links.homepage);
 
-    // turn npm package name from snake-case to standard capitalized title
-    const title = name
-      .replace(/-/g, ' ')
-      .replace(/^\w?|\s\w?/g, (match: string) => match.toUpperCase());
+		// turn npm package name from snake-case to standard capitalized title
+		const title = name
+			.replace(/-/g, ' ')
+			.replace(/^\w?|\s\w?/g, (match: string) => match.toUpperCase());
 
-    // createWebviewPanel takes in the type of the webview panel & Title of the panel & showOptions
-    const panel = vscode.window.createWebviewPanel(
-      'plugin',
-      `Gatsby Plugin: ${title}`,
-      vscode.ViewColumn.One,
-      {
-        enableScripts: true
-      }
-    );
+		// createWebviewPanel takes in the type of the webview panel & Title of the panel & showOptions
+		const panel = window.createWebviewPanel(
+			'plugin',
+			`Gatsby Plugin: ${title}`,
+			ViewColumn.One
+		);
 
-    // create a header for each npm package and display README underneath header
-    // currently #install-btn does not work
-    // const gatsbycli = new GatsbyCli();
-    let installCmnd;
-
-    async function installPlugin(npmName: string, npmLinks: any): Promise<void> {
-      const activeTerminal = Utilities.getActiveTerminal();
-      const rootPath = Utilities.getRootPath();
-      // gets to npmPackage
-      // const { name, links } = npmPackage
-      // plugin.command.arguments[0];
-
-      if (npmLinks) {
-        console.log('npmlinks!');
-        installCmnd =
-          (await PluginData.getNpmInstall(npmLinks.repository, npmLinks.homepage)) ||
-          `npm install ${npmName}`;
-  
-        if (rootPath) {
-          activeTerminal.sendText(`cd && cd ${rootPath}`);
-          activeTerminal.sendText(installCmnd);
-          activeTerminal.show(true);
-        } else {
-          activeTerminal.sendText(installCmnd);
-          activeTerminal.show(true);
-        }
-        // check for if "plugin" is a theme or actual plugin
-        if (npmName.startsWith('gatsby-theme')) {
-          vscode.window.showInformationMessage(
-            'Refer to this theme\'s documentation regarding implementation. Simply click on the theme in the "Themes" section.',
-            'OK'
-          );
-        } else {
-          vscode.window.showInformationMessage(
-            'Refer to this plugin\'s documentation regarding further configuration. Simply click on the plugin in the "Plugins" section.',
-            'OK'
-          );
-        }
-      }
-    }
-    panel.webview.postMessage('hi');
-    panel.webview.html = `
+		// create a header for each npm package and display README underneath header
+		// currently #install-btn does not work
+		panel.webview.html = `
     <style>
       .plugin-header {
         position: fixed;
@@ -104,24 +62,23 @@ export default class WebViews {
     ${readMe}
     `;
 
-    // close the webview when not looking at it
-    panel.onDidChangeViewState((e) => {
-      if (!e.webviewPanel.active) {
-        panel.dispose();
-      }
-    });
-  }
-
-  // potentially add in install functionality in webview
-  // static installPlugin() {
-  //   document.getElementById('install-btn').innerHTML = 'Installing...';
-  //   setTimeout(() => {
-  //     document.getElementById('install-btn').innerHTML = 'Installed';
-  //   }, 3000);
-  //   // const cmdString = await PluginData.getNpmInstall(
-  //   //   links.repository,
-  //   //   links.homepage,
-  //   // );
-  //   // document.getElementById('install-btn').innerHTML = cmdString;
-  // }
+		// close the webview when not looking at it
+		panel.onDidChangeViewState((e) => {
+			if (!e.webviewPanel.active) {
+				panel.dispose();
+			}
+		});
+	}
+	// potentially add in install functionality in webview
+	// static installPlugin() {
+	//   document.getElementById('install-btn').innerHTML = 'Installing...';
+	//   setTimeout(() => {
+	//     document.getElementById('install-btn').innerHTML = 'Installed';
+	//   }, 3000);
+	//   // const cmdString = await PluginData.getNpmInstall(
+	//   //   links.repository,
+	//   //   links.homepage,
+	//   // );
+	//   // document.getElementById('install-btn').innerHTML = cmdString;
+	// }
 }
