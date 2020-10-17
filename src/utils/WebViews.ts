@@ -1,7 +1,6 @@
-import * as vscode from 'vscode';
+import { window, ViewColumn } from 'vscode';
 import PluginData from '../models/NpmData';
 import { PluginPkg } from '../utils/Interfaces';
-import Utilities from './Utilities';
 
 export default class WebViews {
 	static async openWebView(npmPackage: PluginPkg) {
