@@ -16,7 +16,10 @@ export default class WebViews {
 		const panel = window.createWebviewPanel(
 			'plugin',
 			`Gatsby Plugin: ${title}`,
-			ViewColumn.One
+			ViewColumn.One,
+			{
+				enableScripts: true,
+			}
 		);
 
 		// create a header for each npm package and display README underneath header
@@ -50,13 +53,19 @@ export default class WebViews {
     <div class="plugin-header">
       <div id="title-btn">
         <h1 id="title">${title}</h1>
-        <button id="install-btn" onclick="${installPlugin(name, links)}">Install</button>
+        <button id="install-btn" onclick=">Install</button>
       </div>
       <p>Version: ${version}</p>
       <p>${description}</p>
       
       <hr class="solid">
     </div>
+    <script>
+    // 
+    // write a function that gets(fetches) the name and links of the specific plugin
+    // 
+
+    </script>
 
     ${readMe}
     `;
