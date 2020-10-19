@@ -26,6 +26,19 @@ export default class WebViews {
 
 		// create a header for each npm package and display README underneath header
 		// currently #install-btn does not work
+		panel.webview.onDidReceiveMessage(
+			(message) => {
+				switch (message.command) {
+					case 'alert':
+						window.showErrorMessage(message.text);
+						break;
+					default:
+				}
+			},
+			undefined
+			// ExtensionContext.context.subscriptions
+		);
+
 		panel.webview.html = `
     <style>
       .plugin-header {
