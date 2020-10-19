@@ -29,8 +29,8 @@ export default class WebViews {
 		panel.webview.onDidReceiveMessage(
 			(message) => {
 				switch (message.command) {
-					case 'alert':
-						window.showErrorMessage(message.text);
+					case 'sendPluginName':
+						window.showErrorMessage(message.info);
 						break;
 					default:
 				}
@@ -68,7 +68,7 @@ export default class WebViews {
     <div class="plugin-header">
       <div id="title-btn">
         <h1 id="title">${title}</h1>
-        <button id="install-btn" onclick=">Install</button>
+        <button id="install-btn" onclick="findPluginName()">Install</button>
       </div>
       <p>Version: ${version}</p>
       <p>${description}</p>
@@ -76,9 +76,13 @@ export default class WebViews {
       <hr class="solid">
     </div>
     <script>
-    // 
-    // write a function that gets(fetches) the name and links of the specific plugin
-    // 
+		// write a function that searches for the name of the specific plugin and sends to extension
+		function findPluginName() {
+			const vscode = acquireVsCodeApi();
+			const pluginName = document.getElementById('title');
+			console.log('sending message');
+			vscode.postMessage({ command: 'sendPluginName', info: pluginName });
+		};
 
     </script>
 
