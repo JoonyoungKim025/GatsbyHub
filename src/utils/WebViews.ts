@@ -79,7 +79,7 @@ export default class WebViews {
 		// write a function that searches for the name of the specific plugin and sends to extension
 		function findPluginName() {
 			const vscode = acquireVsCodeApi();
-			const pluginName = document.getElementById('title');
+			const pluginName = document.getElementById('title').innerHTML;
 			console.log('sending message');
 			vscode.postMessage({ command: 'sendPluginName', info: pluginName });
 		};
