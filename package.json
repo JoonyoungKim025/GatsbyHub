@@ -2,7 +2,7 @@
 	"name": "gatsbyhub",
 	"displayName": "GatsbyHub",
 	"description": "Utilize your favorite Gatsby features without ever leaving Visual Studio Code.",
-	"version": "1.0.2",
+	"version": "1.0.4",
 	"publisher": "GatsbyHub",
 	"engines": {
 		"vscode": "^1.49.0"
@@ -438,7 +438,6 @@
 		"glob": "^7.1.6",
 		"got": "^11.7.0",
 		"marked": "^1.2.0",
-		"npm-api": "^1.0.0",
 		"typescript": "^4.0.2",
 		"vscode-test": "^1.4.0"
 	},
